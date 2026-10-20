@@ -13,6 +13,12 @@ python3 -m http.server 8000
 ```
 브라우저에서 http://localhost:8000 (편집기는 /admin.html)
 
+## GitHub Pages 배포
+1. 저장소 **Settings → Pages**
+2. Source: **Deploy from a branch**, Branch: `main` / `/ (root)` → Save
+3. 1~2분 뒤 `https://sflove86-nemo.github.io/nemo-link/` 에서 확인 (편집기는 `/admin.html`)
+4. 이후엔 `links.json` 수정 → commit → push 하면 자동 반영
+
 ## 무료 배포 (택1)
 - **Cloudflare Pages**: GitHub 저장소 연결 → 빌드 명령 없음, 출력 폴더 `/` → 개인/상업 모두 무료
 - **GitHub Pages**: 저장소 Settings → Pages → main 브랜치 선택
