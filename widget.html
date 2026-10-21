@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>네모세상 위젯</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<style>
+  :root { --bg1:#fcfcfc; --text:#0a0a0a; --card:#ffffff;
+    --muted: color-mix(in srgb, var(--text) 55%, transparent);
+    --line: color-mix(in srgb, var(--text) 10%, transparent); }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 12px; color: var(--text); background: transparent;
+    font-family: "Pretendard Variable", Pretendard, -apple-system, "Apple SD Gothic Neo", "Noto Sans KR", system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 360px; margin: 0 auto; }
+  .profile { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+  .avatar {
+    width: 48px; height: 48px; border-radius: 50%; flex: none; object-fit: cover;
+    background: color-mix(in srgb, var(--bg1) 45%, var(--card)); border: 1px solid var(--line);
+    display: flex; align-items: center; justify-content: center; font-size: 22px; overflow: hidden; white-space: nowrap; line-height: 1;
+  }
+  .name { margin: 0; font-size: 15px; font-weight: 700; letter-spacing: -0.02em; }
+  .bio { margin: 2px 0 0; font-size: 12.5px; color: var(--muted); white-space: pre-line; }
+  .links { display: flex; flex-direction: column; gap: 8px; }
+  .link {
+    display: flex; align-items: center; gap: 10px; padding: 10px 12px;
+    background: var(--card); border: 1px solid var(--line); border-radius: 12px;
+    color: inherit; text-decoration: none; font-size: 13.5px; font-weight: 600;
+    transition: transform .15s, box-shadow .15s;
+  }
+  .link:hover { transform: translateY(-1px); box-shadow: 0 6px 16px -8px #0003; }
+  .thumb {
+    width: 30px; height: 30px; border-radius: 8px; flex: none; object-fit: cover;
+    background: color-mix(in srgb, var(--bg1) 45%, var(--card));
+    display: flex; align-items: center; justify-content: center; font-size: 16px;
+  }
+  .title { flex: 1; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <section class="profile" id="profile"></section>
+  <nav class="links" id="links"></nav>
+</div>
+<script>
+  const safeUrl = (u) => /^(https?:|mailto:|tel:)/i.test(u) ? u : '#';
+  const isImg = (s) => /^(https?:\/\/|\/|\.\/|data:image\/(png|jpeg|webp|gif);base64,)/.test(s || '');
+  function iconEl(src, cls, fallback) {
+    if (isImg(src)) { const i = document.createElement('img'); i.src = src; i.alt = ''; i.className = cls; return i; }
+    const d = document.createElement('div'); d.className = cls; d.textContent = src || fallback; return d;
+  }
+  function render(data) {
+    const t = data.theme || {};
+    if (t.bg1) document.documentElement.style.setProperty('--bg1', t.bg1);
+    if (t.text) document.documentElement.style.setProperty('--text', t.text);
+
+    const p = document.getElementById('profile'); p.replaceChildren();
+    const info = document.createElement('div');
+    const h = document.createElement('p'); h.className = 'name'; h.textContent = data.name || '';
+    const b = document.createElement('p'); b.className = 'bio'; b.textContent = data.bio || '';
+    info.append(h, b);
+    p.append(iconEl(data.avatar, 'avatar', '🙂'), info);
+
+    const nav = document.getElementById('links'); nav.replaceChildren();
+    (data.links || []).forEach(l => {
+      const a = document.createElement('a');
+      a.className = 'link'; a.href = safeUrl(l.url); a.target = '_blank'; a.rel = 'noopener noreferrer';
+      const s = document.createElement('span'); s.className = 'title'; s.textContent = l.title || '';
+      a.append(iconEl(l.icon, 'thumb', '🔗'), s);
+      nav.append(a);
+    });
+  }
+  fetch('links.json', { cache: 'no-cache' }).then(r => r.json()).then(render)
+    .catch(() => { document.getElementById('profile').textContent = '불러오지 못했어요.'; });
+</script>
+</body>
+</html>
