@@ -23,6 +23,13 @@
   button.danger { background: #fde2e2; color: #b00020; margin-left: auto; }
   .bar { position: fixed; bottom: 0; left: 0; right: 0; background: #fff; padding: 10px 16px; display: flex; gap: 8px; justify-content: center; box-shadow: 0 -1px 4px #0002; }
   .hint { font-size: 12px; color: #777; line-height: 1.6; }
+  .avatar-row { display: flex; align-items: center; gap: 14px; margin: 4px 0 6px; }
+  .avatar-preview {
+    width: 72px; height: 72px; border-radius: 50%; flex: none; object-fit: cover;
+    background: #eef0f5; display: flex; align-items: center; justify-content: center;
+    font-size: 30px; overflow: hidden; white-space: nowrap;
+  }
+  .file-btn { display: inline-block; padding: 8px 12px; border-radius: 8px; cursor: pointer; background: #5b3fd6; color: #fff; font-size: 14px; margin: 0; }
 </style>
 </head>
 <body>
@@ -34,13 +41,23 @@
   <div class="box">
     <label>이름</label><input id="name">
     <label>소개 (줄바꿈 가능)</label><textarea id="bio"></textarea>
-    <label>프로필 이미지 (URL 또는 이모지, 비우면 🙂)</label><input id="avatar">
+    <label>프로필 사진</label>
+    <div class="avatar-row">
+      <div class="avatar-preview" id="avatarPreview">🙂</div>
+      <div class="btns" style="margin:0; flex-wrap:wrap">
+        <label class="file-btn" for="avatarFile">사진 업로드</label>
+        <input type="file" id="avatarFile" accept="image/*" hidden>
+        <button id="avatarClear">사진 제거</button>
+      </div>
+    </div>
+    <p class="hint">사진은 256×256으로 줄여서 links.json 안에 저장돼요. 또는 아래에 이미지 URL이나 이모지를 직접 적어도 돼요.</p>
+    <label>이미지 URL 또는 이모지 (비우면 업로드한 사진, 둘 다 없으면 🙂)</label><input id="avatar">
   </div>
 
   <h2>색상</h2>
   <div class="box colors">
-    <div><label>배경 시작색</label><input type="color" id="bg1"></div>
-    <div><label>배경 끝색</label><input type="color" id="bg2"></div>
+    <div><label>포인트 색 (아이콘·아바타 배경 틴트)</label><input type="color" id="bg1"></div>
+    <div><label>보조 색 (현재 미사용, 배경은 흰색 고정)</label><input type="color" id="bg2"></div>
     <div><label>글자색</label><input type="color" id="text"></div>
     <div><label>카드 색 (흰색 반투명 고정)</label><input id="card" placeholder="#ffffff22"></div>
   </div>
@@ -57,14 +74,67 @@
 
 <script>
   let data = { name: '', bio: '', avatar: '', theme: {}, links: [] };
+  let avatarData = ''; // 업로드한 사진(data: URL)
   const $ = (id) => document.getElementById(id);
 
   function toHex(c, fb) { return /^#[0-9a-f]{6}$/i.test(c || '') ? c : fb; }
+  const isImg = (s) => /^(https?:\/\/|\/|\.\/|data:image\/(png|jpeg|webp|gif);base64,)/.test(s || '');
+
+  function currentAvatar() { return $('avatar').value.trim() || avatarData; }
+
+  function renderAvatarPreview() {
+    const box = $('avatarPreview'); box.replaceChildren();
+    const src = currentAvatar();
+    if (isImg(src)) {
+      const img = document.createElement('img');
+      img.src = src; img.alt = ''; img.className = 'avatar-preview';
+      img.style.width = '100%'; img.style.height = '100%';
+      box.append(img);
+    } else {
+      box.textContent = src || '🙂';
+    }
+  }
+
+  // 사진을 256×256 정사각형으로 잘라 JPEG data URL로 변환
+  function fileToAvatar(file) {
+    return new Promise((resolve, reject) => {
+      const url = URL.createObjectURL(file);
+      const img = new Image();
+      img.onload = () => {
+        const size = 256, s = Math.min(img.width, img.height);
+        const c = document.createElement('canvas'); c.width = c.height = size;
+        const ctx = c.getContext('2d');
+        ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, size, size);
+        ctx.drawImage(img, (img.width - s) / 2, (img.height - s) / 2, s, s, 0, 0, size, size);
+        URL.revokeObjectURL(url);
+        resolve(c.toDataURL('image/jpeg', 0.86));
+      };
+      img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('이미지를 읽지 못했어요')); };
+      img.src = url;
+    });
+  }
+
+  $('avatarFile').onchange = async (e) => {
+    const file = e.target.files[0]; if (!file) return;
+    try {
+      avatarData = await fileToAvatar(file);
+      $('avatar').value = '';
+      renderAvatarPreview();
+    } catch (err) { alert(err.message); }
+    e.target.value = '';
+  };
+  $('avatarClear').onclick = () => { avatarData = ''; $('avatar').value = ''; renderAvatarPreview(); };
+  $('avatar').oninput = renderAvatarPreview;
 
   function load() {
     $('name').value = data.name || '';
     $('bio').value = data.bio || '';
-    $('avatar').value = data.avatar || '';
+    if (isImg(data.avatar) && data.avatar.startsWith('data:')) {
+      avatarData = data.avatar; $('avatar').value = '';
+    } else {
+      avatarData = ''; $('avatar').value = data.avatar || '';
+    }
+    renderAvatarPreview();
     const t = data.theme || {};
     $('bg1').value = toHex(t.bg1, '#1e1b4b');
     $('bg2').value = toHex(t.bg2, '#4c1d95');
@@ -107,7 +177,7 @@
 
   function collect() {
     return {
-      name: $('name').value, bio: $('bio').value, avatar: $('avatar').value,
+      name: $('name').value, bio: $('bio').value, avatar: currentAvatar(),
       theme: { bg1: $('bg1').value, bg2: $('bg2').value, text: $('text').value, card: $('card').value },
       links: data.links
     };

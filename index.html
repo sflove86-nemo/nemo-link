@@ -14,7 +14,7 @@
   :root {
     --bg1: #cef2cf; --bg2: #ebfaf6; --text: #0a0a0a; --card: #ffffff;
     --muted: color-mix(in srgb, var(--text) 55%, transparent);
-    --line: color-mix(in srgb, var(--text) 8%, transparent);
+    --line: color-mix(in srgb, var(--text) 10%, transparent);
     --shadow: 0 1px 2px color-mix(in srgb, var(--text) 6%, transparent),
               0 12px 32px -12px color-mix(in srgb, var(--text) 18%, transparent);
   }
@@ -25,25 +25,16 @@
     font-family: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont,
       "Apple SD Gothic Neo", "Noto Sans KR", system-ui, sans-serif;
     -webkit-font-smoothing: antialiased;
-    background: var(--bg2);
+    background: #fff;
     display: flex; justify-content: center;
-    position: relative; overflow-x: hidden;
   }
-  /* 부드러운 배경 블러 */
-  body::before, body::after {
-    content: ""; position: fixed; z-index: -1; border-radius: 50%;
-    filter: blur(80px); opacity: .9; pointer-events: none;
-  }
-  body::before { width: 60vmax; height: 60vmax; left: -20vmax; top: -25vmax; background: var(--bg1); }
-  body::after  { width: 50vmax; height: 50vmax; right: -20vmax; bottom: -25vmax;
-                 background: color-mix(in srgb, var(--bg1) 60%, var(--bg2)); }
 
   main { width: 100%; max-width: 440px; padding: 64px 20px 48px; }
 
   .profile { text-align: center; margin-bottom: 32px; }
   .avatar {
     width: 96px; height: 96px; border-radius: 50%; object-fit: cover;
-    background: var(--card); box-shadow: var(--shadow);
+    background: color-mix(in srgb, var(--bg1) 45%, var(--card)); box-shadow: var(--shadow);
     display: inline-flex; align-items: center; justify-content: center;
     font-size: 40px; margin-bottom: 16px; border: 3px solid var(--card);
     white-space: nowrap; line-height: 1; overflow: hidden;
@@ -90,7 +81,7 @@
 </main>
 <script>
   const safeUrl = (u) => /^(https?:|mailto:|tel:)/i.test(u) ? u : '#';
-  const isImg = (s) => /^(https?:\/\/|\/|\.\/)/.test(s || '');
+  const isImg = (s) => /^(https?:\/\/|\/|\.\/|data:image\/(png|jpeg|webp|gif);base64,)/.test(s || '');
 
   function iconEl(src, cls, fallback) {
     if (isImg(src)) {

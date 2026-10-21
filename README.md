@@ -5,7 +5,7 @@ DB·로그인 없이 `links.json` 하나로 동작하는 개인용 링크 페이
 ## 파일
 - `index.html` : 공개 페이지
 - `links.json` : 프로필/링크/색상 데이터 (여기만 고치면 됨)
-- `admin.html` : 링크 편집기 (수정 후 links.json 다운로드 → 덮어쓰기)
+- `admin.html` : 링크 편집기 (수정 후 links.json 다운로드 → 덮어쓰기). 프로필 사진 업로드 시 256×256으로 줄여 links.json에 내장
 
 ## 로컬 실행
 ```
