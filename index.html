@@ -3,48 +3,90 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>내 링크</title>
-<meta name="description" content="내 링크 모음">
-<meta property="og:title" content="내 링크">
-<meta property="og:description" content="내 링크 모음">
+<title>네모세상</title>
+<meta name="description" content="네모세상 링크 모음">
+<meta property="og:title" content="네모세상">
+<meta property="og:description" content="네모세상 링크 모음">
 <meta property="og:type" content="website">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <style>
-  :root { --bg1:#1e1b4b; --bg2:#4c1d95; --text:#fff; --card:#ffffff22; }
+  :root {
+    --bg1: #cef2cf; --bg2: #ebfaf6; --text: #0a0a0a; --card: #ffffff;
+    --muted: color-mix(in srgb, var(--text) 55%, transparent);
+    --line: color-mix(in srgb, var(--text) 8%, transparent);
+    --shadow: 0 1px 2px color-mix(in srgb, var(--text) 6%, transparent),
+              0 12px 32px -12px color-mix(in srgb, var(--text) 18%, transparent);
+  }
   * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
   body {
-    margin: 0; min-height: 100vh; color: var(--text);
-    font-family: -apple-system, "Pretendard", "Noto Sans KR", system-ui, sans-serif;
-    background: linear-gradient(160deg, var(--bg1), var(--bg2)) fixed;
+    margin: 0; min-height: 100dvh; color: var(--text);
+    font-family: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont,
+      "Apple SD Gothic Neo", "Noto Sans KR", system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    background: var(--bg2);
     display: flex; justify-content: center;
+    position: relative; overflow-x: hidden;
   }
-  main { width: 100%; max-width: 480px; padding: 48px 16px 64px; }
-  .profile { text-align: center; margin-bottom: 28px; }
+  /* 부드러운 배경 블러 */
+  body::before, body::after {
+    content: ""; position: fixed; z-index: -1; border-radius: 50%;
+    filter: blur(80px); opacity: .9; pointer-events: none;
+  }
+  body::before { width: 60vmax; height: 60vmax; left: -20vmax; top: -25vmax; background: var(--bg1); }
+  body::after  { width: 50vmax; height: 50vmax; right: -20vmax; bottom: -25vmax;
+                 background: color-mix(in srgb, var(--bg1) 60%, var(--bg2)); }
+
+  main { width: 100%; max-width: 440px; padding: 64px 20px 48px; }
+
+  .profile { text-align: center; margin-bottom: 32px; }
   .avatar {
-    width: 88px; height: 88px; border-radius: 50%; object-fit: cover;
-    background: var(--card); display: inline-flex; align-items: center;
-    justify-content: center; font-size: 36px; margin-bottom: 12px;
+    width: 96px; height: 96px; border-radius: 50%; object-fit: cover;
+    background: var(--card); box-shadow: var(--shadow);
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 40px; margin-bottom: 16px; border: 3px solid var(--card);
+    white-space: nowrap; line-height: 1; overflow: hidden;
   }
-  h1 { margin: 0 0 6px; font-size: 22px; }
-  .bio { margin: 0; opacity: .8; font-size: 14px; white-space: pre-line; }
+  h1 { margin: 0 0 6px; font-size: 22px; font-weight: 700; letter-spacing: -0.02em; }
+  .bio { margin: 0; color: var(--muted); font-size: 14.5px; line-height: 1.6; white-space: pre-line; }
+
   .links { display: flex; flex-direction: column; gap: 12px; }
   .link {
     display: flex; align-items: center; gap: 14px; padding: 14px 16px;
-    background: var(--card); backdrop-filter: blur(8px);
-    border-radius: 16px; color: inherit; text-decoration: none;
-    transition: transform .15s, background .15s;
+    background: var(--card); border: 1px solid var(--line); border-radius: 18px;
+    box-shadow: var(--shadow); color: inherit; text-decoration: none;
+    transition: transform .18s ease, box-shadow .18s ease;
   }
-  .link:hover { transform: translateY(-2px); }
+  .link:hover, .link:focus-visible {
+    transform: translateY(-2px);
+    box-shadow: 0 2px 4px color-mix(in srgb, var(--text) 6%, transparent),
+                0 18px 40px -14px color-mix(in srgb, var(--text) 28%, transparent);
+    outline: none;
+  }
+  .link:active { transform: translateY(0); transition-duration: .08s; }
   .thumb {
     width: 44px; height: 44px; border-radius: 12px; flex: none; object-fit: cover;
-    background: #ffffff22; display: flex; align-items: center; justify-content: center; font-size: 22px;
+    background: color-mix(in srgb, var(--bg1) 45%, var(--card));
+    display: flex; align-items: center; justify-content: center; font-size: 22px;
   }
-  .title { flex: 1; text-align: center; font-size: 15px; font-weight: 600; padding-right: 44px; }
+  .title { flex: 1; font-size: 15px; font-weight: 600; letter-spacing: -0.01em; }
+  .chev { flex: none; width: 18px; height: 18px; color: var(--muted); opacity: .7; }
+
+  footer { margin-top: 40px; text-align: center; font-size: 12px; color: var(--muted); }
+  footer a { color: inherit; text-decoration: none; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .link { transition: none; }
+    .link:hover { transform: none; }
+  }
 </style>
 </head>
 <body>
 <main>
   <section class="profile" id="profile"></section>
-  <nav class="links" id="links"></nav>
+  <nav class="links" id="links" aria-label="링크"></nav>
+  <footer id="footer"></footer>
 </main>
 <script>
   const safeUrl = (u) => /^(https?:|mailto:|tel:)/i.test(u) ? u : '#';
@@ -53,12 +95,25 @@
   function iconEl(src, cls, fallback) {
     if (isImg(src)) {
       const img = document.createElement('img');
-      img.src = src; img.alt = ''; img.className = cls;
+      img.src = src; img.alt = ''; img.className = cls; img.loading = 'lazy';
       return img;
     }
     const d = document.createElement('div');
     d.className = cls; d.textContent = src || fallback;
     return d;
+  }
+
+  function chevron() {
+    const s = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    s.setAttribute('viewBox', '0 0 24 24'); s.setAttribute('class', 'chev');
+    s.setAttribute('aria-hidden', 'true');
+    const p = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    p.setAttribute('d', 'M9 6l6 6-6 6');
+    p.setAttribute('fill', 'none'); p.setAttribute('stroke', 'currentColor');
+    p.setAttribute('stroke-width', '2'); p.setAttribute('stroke-linecap', 'round');
+    p.setAttribute('stroke-linejoin', 'round');
+    s.append(p);
+    return s;
   }
 
   function render(data) {
@@ -67,7 +122,8 @@
     if (t.bg1) r.setProperty('--bg1', t.bg1);
     if (t.bg2) r.setProperty('--bg2', t.bg2);
     if (t.text) r.setProperty('--text', t.text);
-    if (t.card) r.setProperty('--card', t.card);
+    // 반투명 카드 값(#ffffff22 등)은 새 디자인에서 불투명 흰색으로 대체
+    if (t.card && /^#[0-9a-f]{6}$/i.test(t.card)) r.setProperty('--card', t.card);
 
     document.title = data.name || '내 링크';
     document.querySelector('meta[property="og:title"]').content = document.title;
@@ -88,9 +144,12 @@
       a.target = '_blank'; a.rel = 'noopener noreferrer';
       const title = document.createElement('span');
       title.className = 'title'; title.textContent = l.title || '';
-      a.append(iconEl(l.icon, 'thumb', '🔗'), title);
+      a.append(iconEl(l.icon, 'thumb', '🔗'), title, chevron());
       nav.append(a);
     });
+
+    const f = document.getElementById('footer');
+    f.textContent = `© ${new Date().getFullYear()} ${data.name || ''}`.trim();
   }
 
   fetch('links.json', { cache: 'no-cache' })
